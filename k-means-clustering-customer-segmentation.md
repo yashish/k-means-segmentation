@@ -49,3 +49,5 @@ At risk — high recency, high spend
 Lost — high recency, low spend
 
 6. Write your insight — "23% of customers are At Risk. Time for a win-back campaign."
+
+![Initial run](image.png)
