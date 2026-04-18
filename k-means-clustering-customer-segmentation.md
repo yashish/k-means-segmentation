@@ -51,3 +51,10 @@ Lost — high recency, low spend
 6. Write your insight — "23% of customers are At Risk. Time for a win-back campaign."
 
 ![Initial run](image.png)
+
+AFter execution of:
+
+print(rfm.head())
+print(rfm.describe())
+
+![Derived Revenue](image-1.png)
