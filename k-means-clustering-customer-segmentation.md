@@ -58,3 +58,6 @@ print(rfm.head())
 print(rfm.describe())
 
 ![Derived Revenue](image-1.png)
+
+# plot
+![Number of cluster segments plot](image-2.png)
