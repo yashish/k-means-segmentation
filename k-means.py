@@ -39,17 +39,26 @@ df.shape
 # set reference date for recency calculation (day after the last transaction date)
 reference_date = df['InvoiceDate'].max() + dt.timedelta(days=1)
 
-rfm = df.groupby('CustomerID').agg({
-    'InvoiceDate': lambda x: (reference_date - x.max()).days,  # Recency
-    'InvoiceNo': 'nunique',  # Frequency
-    'Revenue': 'sum'  # Monetary
-}).reset_index()
+rfm = df.groupby('CustomerID').agg(
+    Recency = ('InvoiceDate', lambda x: (reference_date - x.max()).days),  # Recency
+    Frequency = ('InvoiceNo', 'nunique'),  # Frequency
+    Monetary = ('Revenue', 'sum')  # Monetary
+).reset_index()
 
 print(rfm.head())
 print(rfm.describe())
 
+# Handle outliers and scale
+rfm_log = rfm[['Recency','Frequency','Monetary']].copy()
+rfm_log['Recency'] = np.log1p(rfm_log['Recency'])
+rfm_log['Frequency'] = np.log1p(rfm_log['Frequency'])
+rfm_log['Monetary'] = np.log1p(rfm_log['Monetary'])
 
+# Scale so all features are on the same range
+scalar = StandardScaler()
+rfm_scaled = scalar.fit_transform(rfm_log)
 
+print(rfm_scaled[:5])  # Print the first 5 rows of the scaled RFM features
 
 # Create RFM features
 
