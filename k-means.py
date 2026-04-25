@@ -83,4 +83,61 @@ plt.tight_layout() # Adjust the layout to prevent overlap of labels and title
 plt.show()
 
 # From the elbow plot, we can choose k=4 as the optimal number of clusters
+# Run K-Means and label your segments
+kmeans = KMeans(n_clusters=4, random_state=42, n_init=10) # Initialize KMeans with 4 clusters and a fixed random state for reproducibility
+rfm['Cluster'] = kmeans.fit_predict(rfm_scaled) # Fit the KMeans model to the scaled RFM data and assign cluster labels to the original RFM DataFrame
+
+rfm['Cluster'] = rfm['Cluster'].astype(str) # Convert the Cluster column to a string data type for better handling and visualization
+
+# Get the average profile of each segment by calculating the mean values of Recency, Frequency, and Monetary for each cluster.
+cluster_profile = rfm.groupby('Cluster').agg({
+    'Recency': 'mean',
+    'Frequency': 'mean',
+    'Monetary': 'mean',
+    'CustomerID': 'count' # Count of customers in each cluster
+}).rename(columns={'CustomerID': 'Count'}).reset_index()
+print(cluster_profile)
+
+summary = rfm.groupby('Cluster')[['Recency', 'Frequency', 'Monetary']].mean().round(1).reset_index()
+print(summary)
+
+# Visualize the cluster profiles using a bar plot
+# Interpretation of the cluster profiles:
+# Cluster 0: This cluster has the highest average Recency, indicating that these customers have not made a purchase recently. They also have the lowest average Frequency and Monetary values, suggesting that they are less engaged and spend less on average. This cluster could be labeled as "At Risk" or "Dormant" customers.
+# Cluster 1: This cluster has the lowest average Recency, indicating that these customers have made a purchase recently. They also have the highest average Frequency and Monetary values, suggesting that they are highly engaged and spend more on average. This cluster could be labeled as "Loyal" or "Best" customers.
+# Cluster 2: This cluster has a moderate average Recency, Frequency, and Monetary values, suggesting that these customers are somewhat engaged and spend a moderate amount. This cluster could be labeled as "Potential Loyalists" or "Regular" customers.
+# Cluster 3: This cluster has a moderate average Recency but lower Frequency and Monetary values compared to Cluster
+#  2, suggesting that these customers are less engaged and spend less on average. This cluster could be labeled as "Needs Attention" or "Occasional" customers.
+
+rfm_scaled_df = pd.DataFrame(rfm_scaled, columns=['Recency', 'Frequency', 'Monetary']) # Create a DataFrame from the scaled RFM data for better handling and visualization
+rfm_scaled_df['Cluster'] = rfm['Cluster'].values  # Add the Cluster labels to the scaled DataFrame for visualization
+
+cluster_profile = rfm_scaled_df.groupby('Cluster').mean().reset_index() # Calculate the mean values of Recency, Frequency, and Monetary for each cluster in the scaled DataFrame
+print(cluster_profile)
+
+rfm_melt = cluster_profile.melt(id_vars='Cluster', var_name='RFM Metric', value_name='Average Value') # Melt the cluster profile DataFrame for easier plotting with seaborn
+print(rfm_melt)
+
+# Create a bar plot to visualize the average RFM values for each cluster
+plt.figure(figsize=(10, 6)) # Set the figure size for better visibility
+sns.barplot(x='Cluster', y='Average Value', hue='RFM Metric', data=rfm_melt, palette='Set2') # Create a bar plot with Cluster on the x-axis, Average Value on the y-axis, and different colors for each RFM Metric
+plt.title('Average RFM Values by Cluster') # Set the title of the plot
+plt.xlabel('Cluster') # Set the x-axis label
+plt.ylabel('Average Value (Scaled)') # Set the y-axis label
+plt.legend(title='RFM Metric') # Add a legend with the title 'RFM Metric'
+plt.tight_layout() # Adjust the layout to prevent overlap of labels and title
+plt.show() # Display the plot
+
+plt.figure(figsize=(10, 6)) # Set the figure size for better visibility
+sns.barplot(x='RFM Metric', y='Average Value', hue='Cluster', data=rfm_melt, palette='Set2') # Create a bar plot with Cluster on the x-axis, Average Value on the y-axis, and different colors for each RFM Metric
+plt.title('Customer Segment Profiles Standardized') # Set the title of the plot
+plt.xlabel('RFM Metric') # Set the x-axis label
+plt.ylabel('Standardized Value (Z-Score)') # Set the y-axis label
+plt.legend(title='Cluster') # Add a legend with the title 'Cluster'
+plt.tight_layout() # Adjust the layout to prevent overlap of labels and title
+plt.show() # Display the plot
+
+
+
+
 

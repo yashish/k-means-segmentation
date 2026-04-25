@@ -59,5 +59,12 @@ print(rfm.describe())
 
 ![Derived Revenue](image-1.png)
 
-# plot
+# plot 1
 ![Number of cluster segments plot](image-2.png)
+
+# Plot 2 - Average RFM values by Cluster
+![Avg RFM](image-3.png)
+
+# Plot 3 - Customer Segment Profiles standardized
+![Segment Profiles](image-4.png)
+
